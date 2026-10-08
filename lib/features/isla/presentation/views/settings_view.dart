@@ -130,6 +130,24 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
           ),
           const Divider(height: 1, color: Color(0xFF334155)),
           _buildMenuItem(
+            icon: Icons.credit_card,
+            title: 'Lector de Banda Magnética',
+            subtitle: 'Configurar lector para tarjetas de empleado',
+            onTap: () {
+              context.push('/configuracion/msr');
+            },
+          ),
+          const Divider(height: 1, color: Color(0xFF334155)),
+          _buildMenuItem(
+            icon: Icons.contactless_outlined,
+            title: 'Lector NFC',
+            subtitle: 'Configurar lectura de proximidad (Opcional)',
+            onTap: () {
+              context.push('/configuracion/nfc');
+            },
+          ),
+          const Divider(height: 1, color: Color(0xFF334155)),
+          _buildMenuItem(
             icon: Icons.wifi,
             title: 'Red y API',
             subtitle: 'Ajustes del servidor (Próximamente)',

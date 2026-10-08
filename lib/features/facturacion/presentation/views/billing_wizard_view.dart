@@ -114,7 +114,7 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
     }
   }
 
-  void _showNfcBottomSheet(BillingWizardState state, BillingWizard notifier) {
+  void _showMagneticBottomSheet(BillingWizardState state, BillingWizard notifier) {
     showModalBottomSheet(
       context: context,
       isDismissible: true,
@@ -150,7 +150,7 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Acerque la tarjeta de despachador (NFC) a la parte posterior de la tablet para autorizar la factura.',
+                      'Pase la tarjeta de banda magnética del despachador por el lector para autorizar.',
                       style: TextStyle(
                         color: Color(0xFF64748B),
                         fontSize: 15,
@@ -257,7 +257,7 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
                         backgroundColor: const Color(0xFF0D9488),
                         minimumSize: const Size(double.infinity, 64),
                       ),
-                      child: const Text('Leer Tarjeta NFC'),
+                        child: const Text('Continuar'),
                     ),
                   ],
                 ),
@@ -366,7 +366,7 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
                 // Proceed Button
                 ElevatedButton(
                   onPressed: _isFormValid(state)
-                      ? () => _showNfcBottomSheet(state, notifier)
+                      ? () => _showMagneticBottomSheet(state, notifier)
                       : null,
                   style: ElevatedButton.styleFrom(
                     disabledBackgroundColor: const Color(0xFFE2E8F0),
@@ -509,30 +509,31 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
 
         if (state.contadoType == ContadoType.clienteRfc) ...[
           // RFC search inputs
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _rfcController,
-                  onChanged: notifier.setRfcQuery,
-                  decoration: const InputDecoration(
-                    labelText: 'Buscar RFC o Razón Social',
-                    hintText: 'ej. CSF150...',
-                    prefixIcon: Icon(Icons.search),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              ElevatedButton(
-                onPressed: state.rfcQuery.isNotEmpty
-                    ? () => notifier.searchClientes()
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(120, 64),
-                ),
-                child: const Text('Buscar'),
-              ),
-            ],
+          TextField(
+            controller: _rfcController,
+            onChanged: notifier.setRfcQuery,
+            decoration: const InputDecoration(
+              labelText: 'Buscar RFC o Razón Social',
+              hintText: 'ej. CSF150...',
+              prefixIcon: Icon(Icons.search),
+            ),
+          ),
+          const SizedBox(height: 12),
+          ElevatedButton(
+            onPressed: state.rfcQuery.isNotEmpty
+                ? () => notifier.searchClientes()
+                : null,
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 56),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.search),
+                SizedBox(width: 8),
+                Text('Buscar'),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
 

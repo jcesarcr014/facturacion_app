@@ -21,10 +21,16 @@ Cliente _$ClienteFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Cliente {
+  int get id => throw _privateConstructorUsedError;
   String get rfc => throw _privateConstructorUsedError;
   @JsonKey(name: 'razon_social')
   String get razonSocial => throw _privateConstructorUsedError;
-  String get email => throw _privateConstructorUsedError;
+  @JsonKey(name: 'regimen_fiscal')
+  String? get regimenFiscal => throw _privateConstructorUsedError;
+  @JsonKey(name: 'codigo_postal')
+  String? get codigoPostal => throw _privateConstructorUsedError;
+  @JsonKey(name: 'correos')
+  String? get email => throw _privateConstructorUsedError;
 
   /// Serializes this Cliente to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,9 +47,12 @@ abstract class $ClienteCopyWith<$Res> {
       _$ClienteCopyWithImpl<$Res, Cliente>;
   @useResult
   $Res call({
+    int id,
     String rfc,
     @JsonKey(name: 'razon_social') String razonSocial,
-    String email,
+    @JsonKey(name: 'regimen_fiscal') String? regimenFiscal,
+    @JsonKey(name: 'codigo_postal') String? codigoPostal,
+    @JsonKey(name: 'correos') String? email,
   });
 }
 
@@ -62,12 +71,19 @@ class _$ClienteCopyWithImpl<$Res, $Val extends Cliente>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? rfc = null,
     Object? razonSocial = null,
-    Object? email = null,
+    Object? regimenFiscal = freezed,
+    Object? codigoPostal = freezed,
+    Object? email = freezed,
   }) {
     return _then(
       _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
             rfc: null == rfc
                 ? _value.rfc
                 : rfc // ignore: cast_nullable_to_non_nullable
@@ -76,10 +92,18 @@ class _$ClienteCopyWithImpl<$Res, $Val extends Cliente>
                 ? _value.razonSocial
                 : razonSocial // ignore: cast_nullable_to_non_nullable
                       as String,
-            email: null == email
+            regimenFiscal: freezed == regimenFiscal
+                ? _value.regimenFiscal
+                : regimenFiscal // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            codigoPostal: freezed == codigoPostal
+                ? _value.codigoPostal
+                : codigoPostal // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            email: freezed == email
                 ? _value.email
                 : email // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
           )
           as $Val,
     );
@@ -95,9 +119,12 @@ abstract class _$$ClienteImplCopyWith<$Res> implements $ClienteCopyWith<$Res> {
   @override
   @useResult
   $Res call({
+    int id,
     String rfc,
     @JsonKey(name: 'razon_social') String razonSocial,
-    String email,
+    @JsonKey(name: 'regimen_fiscal') String? regimenFiscal,
+    @JsonKey(name: 'codigo_postal') String? codigoPostal,
+    @JsonKey(name: 'correos') String? email,
   });
 }
 
@@ -115,12 +142,19 @@ class __$$ClienteImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? rfc = null,
     Object? razonSocial = null,
-    Object? email = null,
+    Object? regimenFiscal = freezed,
+    Object? codigoPostal = freezed,
+    Object? email = freezed,
   }) {
     return _then(
       _$ClienteImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
         rfc: null == rfc
             ? _value.rfc
             : rfc // ignore: cast_nullable_to_non_nullable
@@ -129,10 +163,18 @@ class __$$ClienteImplCopyWithImpl<$Res>
             ? _value.razonSocial
             : razonSocial // ignore: cast_nullable_to_non_nullable
                   as String,
-        email: null == email
+        regimenFiscal: freezed == regimenFiscal
+            ? _value.regimenFiscal
+            : regimenFiscal // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        codigoPostal: freezed == codigoPostal
+            ? _value.codigoPostal
+            : codigoPostal // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        email: freezed == email
             ? _value.email
             : email // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
       ),
     );
   }
@@ -142,25 +184,37 @@ class __$$ClienteImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ClienteImpl implements _Cliente {
   const _$ClienteImpl({
+    required this.id,
     required this.rfc,
     @JsonKey(name: 'razon_social') required this.razonSocial,
-    required this.email,
+    @JsonKey(name: 'regimen_fiscal') this.regimenFiscal,
+    @JsonKey(name: 'codigo_postal') this.codigoPostal,
+    @JsonKey(name: 'correos') this.email,
   });
 
   factory _$ClienteImpl.fromJson(Map<String, dynamic> json) =>
       _$$ClienteImplFromJson(json);
 
   @override
+  final int id;
+  @override
   final String rfc;
   @override
   @JsonKey(name: 'razon_social')
   final String razonSocial;
   @override
-  final String email;
+  @JsonKey(name: 'regimen_fiscal')
+  final String? regimenFiscal;
+  @override
+  @JsonKey(name: 'codigo_postal')
+  final String? codigoPostal;
+  @override
+  @JsonKey(name: 'correos')
+  final String? email;
 
   @override
   String toString() {
-    return 'Cliente(rfc: $rfc, razonSocial: $razonSocial, email: $email)';
+    return 'Cliente(id: $id, rfc: $rfc, razonSocial: $razonSocial, regimenFiscal: $regimenFiscal, codigoPostal: $codigoPostal, email: $email)';
   }
 
   @override
@@ -168,15 +222,28 @@ class _$ClienteImpl implements _Cliente {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ClienteImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.rfc, rfc) || other.rfc == rfc) &&
             (identical(other.razonSocial, razonSocial) ||
                 other.razonSocial == razonSocial) &&
+            (identical(other.regimenFiscal, regimenFiscal) ||
+                other.regimenFiscal == regimenFiscal) &&
+            (identical(other.codigoPostal, codigoPostal) ||
+                other.codigoPostal == codigoPostal) &&
             (identical(other.email, email) || other.email == email));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, rfc, razonSocial, email);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    rfc,
+    razonSocial,
+    regimenFiscal,
+    codigoPostal,
+    email,
+  );
 
   /// Create a copy of Cliente
   /// with the given fields replaced by the non-null parameter values.
@@ -194,20 +261,32 @@ class _$ClienteImpl implements _Cliente {
 
 abstract class _Cliente implements Cliente {
   const factory _Cliente({
+    required final int id,
     required final String rfc,
     @JsonKey(name: 'razon_social') required final String razonSocial,
-    required final String email,
+    @JsonKey(name: 'regimen_fiscal') final String? regimenFiscal,
+    @JsonKey(name: 'codigo_postal') final String? codigoPostal,
+    @JsonKey(name: 'correos') final String? email,
   }) = _$ClienteImpl;
 
   factory _Cliente.fromJson(Map<String, dynamic> json) = _$ClienteImpl.fromJson;
 
+  @override
+  int get id;
   @override
   String get rfc;
   @override
   @JsonKey(name: 'razon_social')
   String get razonSocial;
   @override
-  String get email;
+  @JsonKey(name: 'regimen_fiscal')
+  String? get regimenFiscal;
+  @override
+  @JsonKey(name: 'codigo_postal')
+  String? get codigoPostal;
+  @override
+  @JsonKey(name: 'correos')
+  String? get email;
 
   /// Create a copy of Cliente
   /// with the given fields replaced by the non-null parameter values.

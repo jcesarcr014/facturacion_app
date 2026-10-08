@@ -8,6 +8,8 @@ import 'package:facturacion_app/features/isla/presentation/views/pump_sales_view
 import 'package:facturacion_app/features/facturacion/presentation/views/billing_wizard_view.dart';
 import 'package:facturacion_app/features/isla/presentation/views/settings_view.dart';
 import 'package:facturacion_app/features/isla/presentation/views/printer_settings_view.dart';
+import 'package:facturacion_app/features/isla/presentation/views/msr_settings_view.dart';
+import 'package:facturacion_app/features/isla/presentation/views/nfc_settings_view.dart';
 
 part 'router.g.dart';
 
@@ -18,10 +20,7 @@ GoRouter router(RouterRef ref) {
   return GoRouter(
     initialLocation: '/setup',
     routes: [
-      GoRoute(
-        path: '/setup',
-        builder: (context, state) => const SetupView(),
-      ),
+      GoRoute(path: '/setup', builder: (context, state) => const SetupView()),
       GoRoute(
         path: '/wait-auth',
         builder: (context, state) => const WaitAuthView(),
@@ -53,6 +52,14 @@ GoRouter router(RouterRef ref) {
         path: '/configuracion/impresora',
         builder: (context, state) => const PrinterSettingsView(),
       ),
+      GoRoute(
+        path: '/configuracion/msr',
+        builder: (context, state) => const MsrSettingsView(),
+      ),
+      GoRoute(
+        path: '/configuracion/nfc',
+        builder: (context, state) => const NfcSettingsView(),
+      ),
     ],
     redirect: (context, state) {
       final subLocation = state.uri.path;
@@ -62,9 +69,14 @@ GoRouter router(RouterRef ref) {
         unconfigured: (_) => subLocation == '/setup' ? null : '/setup',
         registering: (_) => subLocation == '/setup' ? null : '/setup',
         unauthorized: (_) => subLocation == '/wait-auth' ? null : '/wait-auth',
-        authorized: (_) => (subLocation == '/setup' || subLocation == '/wait-auth') ? '/isla' : null,
+        authorized: (_) =>
+            (subLocation == '/setup' || subLocation == '/wait-auth')
+            ? '/isla'
+            : null,
         orElse: () => null,
       );
     },
   );
 }
+
+

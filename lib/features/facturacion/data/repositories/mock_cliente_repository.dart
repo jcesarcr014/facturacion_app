@@ -13,11 +13,13 @@ class MockClienteRepository implements ClienteRepository {
 
     return [
       Cliente(
+        id: 1,
         rfc: 'GOMJ851020XYZ',
         razonSocial: 'JUAN GOMEZ MARTINEZ ($q)',
         email: 'juan.gomez@gmail.com',
       ),
       Cliente(
+        id: 2,
         rfc: 'CSF150618ABC',
         razonSocial: 'CONSTRUCTORA SAN FRANCISCO S.A. DE C.V.',
         email: 'facturas@csanfrancisco.com.mx',
