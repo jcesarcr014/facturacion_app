@@ -124,10 +124,10 @@ class BillingWizard extends _$BillingWizard {
     try {
       final repo = ref.read(tagRepositoryProvider);
       final result = await repo.validateTag(state.tagId);
-            state = state.copyWith(
-          tagValidationResult: result, 
-          isValidatingTag: false,
-          odoInicialStr: result.isValid ? '125400' : state.odoInicialStr,
+      state = state.copyWith(
+        tagValidationResult: result,
+        isValidatingTag: false,
+        odoInicialStr: result.isValid ? (result.odoInicial?.toString() ?? '') : '',
       );
       return result.isValid;
     } catch (e) {
@@ -144,22 +144,30 @@ class BillingWizard extends _$BillingWizard {
     try {
       final repo = ref.read(facturacionRepositoryProvider);
       
-      final odoInicial = int.tryParse(state.odoInicialStr);
-      final odoFinal = int.tryParse(state.odoFinalStr);
+      final odoInicialInt = int.tryParse(state.odoInicialStr);
+      final odoFinalInt = state.odoFinalStr.trim().isNotEmpty
+          ? int.tryParse(state.odoFinalStr)
+          : odoInicialInt;
 
       final secureStorage = ref.read(secureStorageServiceProvider);
       final printerWidth = await secureStorage.readPrinterWidth();
 
+      final metodoPago = state.paymentMode == PaymentMode.contado
+          ? 'contado'
+          : (state.tagValidationResult?.tipo?.toLowerCase() == 'anticipo' ? 'anticipo' : 'credito');
+
       final response = await repo.generateInvoice(
         despachoId: int.parse(despachoId),
-        metodoPago: state.paymentMode == PaymentMode.contado ? 'contado' : 'credito',
+        metodoPago: metodoPago,
         operatorCardUid: dispatcherId,
         companyClientId: state.selectedCliente?.id,
         formaPago: state.formaPago,
         usoCfdi: state.usoCfdi,
         referenciaBancaria: state.referenciaBancaria.isNotEmpty ? state.referenciaBancaria : null,
-        odoInicial: odoInicial,
-        odoFinal: odoFinal,
+        codigoTag: state.paymentMode == PaymentMode.credito ? state.tagId : null,
+        nip: state.nipStr.isNotEmpty ? state.nipStr : null,
+        odoInicial: odoInicialInt,
+        odoFinal: odoFinalInt,
         printerWidth: printerWidth,
       );
 

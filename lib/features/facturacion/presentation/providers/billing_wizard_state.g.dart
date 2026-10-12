@@ -6,7 +6,7 @@ part of 'billing_wizard_state.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$billingWizardHash() => r'd78a0fa805edfb3dd90cfcbba67fa1d4a6d96486';
+String _$billingWizardHash() => r'bed11004831514eab9d36c14da2c41a972cac3b2';
 
 /// See also [BillingWizard].
 @ProviderFor(BillingWizard)

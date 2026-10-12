@@ -12,6 +12,8 @@ class MockFacturacionRepository implements FacturacionRepository {
     String? formaPago,
     String? usoCfdi,
     String? referenciaBancaria,
+    String? codigoTag,
+    String? nip,
     int? odoInicial,
     int? odoFinal,
     required int printerWidth,

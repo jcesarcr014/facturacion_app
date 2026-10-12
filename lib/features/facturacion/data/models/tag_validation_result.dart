@@ -7,9 +7,14 @@ part 'tag_validation_result.g.dart';
 class TagValidationResult with _$TagValidationResult {
   const factory TagValidationResult({
     @JsonKey(name: 'is_valid') required bool isValid,
-    double? balance,
+    String? tipo,
     @JsonKey(name: 'client_name') String? clientName,
+    String? rfc,
     String? plates,
+    double? balance,
+    @JsonKey(name: 'odo_inicial') int? odoInicial,
+    @Default(true) @JsonKey(name: 'tiene_saldo_suficiente') bool tieneSaldoSuficiente,
+    @Default(false) @JsonKey(name: 'requiere_nip') bool requiereNip,
     @JsonKey(name: 'error_message') String? errorMessage,
   }) = _TagValidationResult;
 

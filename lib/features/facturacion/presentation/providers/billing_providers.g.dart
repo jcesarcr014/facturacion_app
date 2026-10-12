@@ -43,7 +43,7 @@ final clienteRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ClienteRepositoryRef = AutoDisposeProviderRef<ClienteRepository>;
-String _$tagRepositoryHash() => r'3f59d393acf990472ff62ccca85957038cba6029';
+String _$tagRepositoryHash() => r'fa3d71fa6387d672b1e388bbc01f5494003fd531';
 
 /// See also [tagRepository].
 @ProviderFor(tagRepository)

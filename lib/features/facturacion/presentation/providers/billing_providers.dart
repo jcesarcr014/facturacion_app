@@ -4,6 +4,7 @@ import '../../data/repositories/api_cliente_repository.dart';
 import '../../data/repositories/mock_cliente_repository.dart';
 import '../../data/repositories/tag_repository.dart';
 import '../../data/repositories/mock_tag_repository.dart';
+import '../../data/repositories/api_tag_repository.dart';
 import '../../data/repositories/facturacion_repository.dart';
 import '../../data/repositories/mock_facturacion_repository.dart';
 import '../../data/repositories/sat_catalog_repository.dart';
@@ -29,8 +30,8 @@ ClienteRepository clienteRepository(ClienteRepositoryRef ref) {
 
 @riverpod
 TagRepository tagRepository(TagRepositoryRef ref) {
-  // Swappable provider - returning Mock version for now
-  return MockTagRepository();
+  final dio = ref.watch(dioClientProvider);
+  return ApiTagRepository(dio);
 }
 
 @riverpod

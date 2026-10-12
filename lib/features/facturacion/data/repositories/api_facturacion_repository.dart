@@ -18,6 +18,8 @@ class ApiFacturacionRepository implements FacturacionRepository {
     String? formaPago,
     String? usoCfdi,
     String? referenciaBancaria,
+    String? codigoTag,
+    String? nip,
     int? odoInicial,
     int? odoFinal,
     required int printerWidth,
@@ -25,25 +27,41 @@ class ApiFacturacionRepository implements FacturacionRepository {
     try {
       print('=== [DEBUG FACTURACION] INICIANDO PETICION ===');
       print('=== [DEBUG] Empleado/Despachador Card UID: $operatorCardUid ===');
-      print('=== [DEBUG] Despacho ID: $despachoId ===');
+      print('=== [DEBUG] Despacho ID: $despachoId | Metodo: $metodoPago ===');
 
-      final payload = {
+      final payload = <String, dynamic>{
         "nDespachoID": despachoId,
         "metodo_pago": metodoPago,
         "operator_card_uid": operatorCardUid,
       };
 
-      if (companyClientId != null) {
-        payload["company_client_id"] = companyClientId;
-      }
-      if (formaPago != null) {
-        payload["forma_pago"] = formaPago;
-      }
-      if (usoCfdi != null) {
-        payload["uso_cfdi"] = usoCfdi;
-      }
-      if (referenciaBancaria != null && referenciaBancaria.isNotEmpty) {
-        payload["referencia_bancaria"] = referenciaBancaria;
+      if (metodoPago == 'contado') {
+        if (companyClientId != null) {
+          payload["company_client_id"] = companyClientId;
+        }
+        if (formaPago != null) {
+          payload["forma_pago"] = formaPago;
+        }
+        if (usoCfdi != null) {
+          payload["uso_cfdi"] = usoCfdi;
+        }
+        if (referenciaBancaria != null && referenciaBancaria.isNotEmpty) {
+          payload["referencia_bancaria"] = referenciaBancaria;
+        }
+      } else {
+        // Credito o Anticipo
+        if (codigoTag != null) {
+          payload["codigo_tag"] = codigoTag;
+        }
+        if (nip != null && nip.isNotEmpty) {
+          payload["nip"] = nip;
+        }
+        if (odoInicial != null) {
+          payload["odo_inicial"] = odoInicial;
+        }
+        if (odoFinal != null) {
+          payload["odo_final"] = odoFinal;
+        }
       }
 
       print('=== [DEBUG] URL: /api/v1/despachos/facturar ===');

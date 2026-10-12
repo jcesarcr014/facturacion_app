@@ -782,12 +782,14 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
                   children: [
                     const Icon(Icons.check_circle, color: Color(0xFF10B981)),
                     const SizedBox(width: 10),
-                    const Text(
-                      'TAG AUTORIZADO CON EXITO',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Color(0xFF10B981),
+                    Expanded(
+                      child: Text(
+                        'TAG AUTORIZADO - ${(state.tagValidationResult!.tipo ?? 'CRÉDITO').toUpperCase()}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: Color(0xFF10B981),
+                        ),
                       ),
                     ),
                   ],
@@ -797,16 +799,25 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
                   'Cliente:',
                   state.tagValidationResult!.clientName ?? '-',
                 ),
+                if (state.tagValidationResult!.rfc != null && state.tagValidationResult!.rfc!.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  _buildTagInfoRow(
+                    'RFC:',
+                    state.tagValidationResult!.rfc!,
+                  ),
+                ],
                 const SizedBox(height: 6),
                 _buildTagInfoRow(
-                  'Placas:',
+                  'Vehículo:',
                   state.tagValidationResult!.plates ?? '-',
                 ),
-                const SizedBox(height: 6),
-                _buildTagInfoRow(
-                  'Saldo Disp.:',
-                  '\$${state.tagValidationResult!.balance?.toStringAsFixed(2)}',
-                ),
+                if (state.tagValidationResult!.balance != null) ...[
+                  const SizedBox(height: 6),
+                  _buildTagInfoRow(
+                    'Saldo Disp.:',
+                    '\$${state.tagValidationResult!.balance!.toStringAsFixed(2)}',
+                  ),
+                ],
               ],
             ),
           ),
@@ -830,8 +841,8 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
                 controller: _odoFinalController,
                 onChanged: notifier.setOdoFinal,
                 decoration: InputDecoration(
-                  labelText: 'Odo. Final (KM)',
-                  hintText: 'Ej. 120500',
+                  labelText: 'Odo. Final (KM) - Opcional',
+                  hintText: state.odoInicialStr.isNotEmpty ? 'Por defecto: ${state.odoInicialStr}' : 'Ej. 120500',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -840,20 +851,22 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          TextField(
-            onChanged: notifier.setNip,
-            obscureText: true,
-            decoration: InputDecoration(
-              labelText: 'NIP de Autorización',
-              hintText: 'Ingresa NIP (ej. 1848)',
-              prefixIcon: const Icon(Icons.password),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+          if (state.tagValidationResult!.requiereNip) ...[
+            const SizedBox(height: 16),
+            TextField(
+              onChanged: notifier.setNip,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'NIP de Autorización del Chofer',
+                hintText: 'Ingresa NIP de seguridad',
+                prefixIcon: const Icon(Icons.password),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
+              keyboardType: TextInputType.number,
             ),
-            keyboardType: TextInputType.number,
-          ),
+          ],
         ],
       ],
     );
@@ -895,12 +908,15 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
         return false;
       }
     } else {
-      if (state.tagValidationResult == null ||
-          !state.tagValidationResult!.isValid)
+      if (state.tagValidationResult == null || !state.tagValidationResult!.isValid) {
         return false;
-      if (state.odoInicialStr.isEmpty || state.odoFinalStr.isEmpty)
+      }
+      if (!state.tagValidationResult!.tieneSaldoSuficiente) {
         return false;
-      if (state.nipStr != '1848') return false; // DUMMY validation
+      }
+      if (state.tagValidationResult!.requiereNip && state.nipStr.trim().isEmpty) {
+        return false;
+      }
     }
     return !state.isBilling;
   }
