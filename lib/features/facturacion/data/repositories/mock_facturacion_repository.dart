@@ -5,13 +5,15 @@ import 'facturacion_repository.dart';
 class MockFacturacionRepository implements FacturacionRepository {
   @override
   Future<FacturacionResponse> generateInvoice({
-    required String despachoId,
-    required String paymentType,
-    String? rfc,
-    String? tagId,
+    required int despachoId,
+    required String metodoPago,
+    required String operatorCardUid,
+    int? companyClientId,
+    String? formaPago,
+    String? usoCfdi,
+    String? referenciaBancaria,
     int? odoInicial,
     int? odoFinal,
-    required String dispatcherId,
     required int printerWidth,
   }) async {
     // Simulate 2 seconds billing processing time
@@ -37,32 +39,32 @@ class MockFacturacionRepository implements FacturacionRepository {
     String dashSeparator() => '-' * cols;
 
     final rawText = '''
-${separator()}
-${center("ESTACION DE SERVICIO #1820")}
-${center("GRUPO COMBUSTIBLES DEL SUR")}
-${center("RFC: GCS150812ABC")}
-${center("CARR. NACIONAL KM 245")}
-${center("MONTERREY, N.L., CP 64000")}
-${separator()}
+\${separator()}
+\${center("ESTACION DE SERVICIO #1820")}
+\${center("GRUPO COMBUSTIBLES DEL SUR")}
+\${center("RFC: GCS150812ABC")}
+\${center("CARR. NACIONAL KM 245")}
+\${center("MONTERREY, N.L., CP 64000")}
+\${separator()}
 COMPROBANTE SIMULADO FACTURACION
-FOLIO : $despachoId
-FISCAL: ${invoiceUuid.substring(0, 18)}
-FECHA : ${timestamp.toString().substring(0, 19)}
-DESP  : ID-$dispatcherId
-PAGO  : ${paymentType.toUpperCase()}
-${rfc != null ? 'RFC   : $rfc\n' : ''}${tagId != null ? 'TAG   : $tagId\n' : ''}${odoInicial != null ? 'ODO IN: $odoInicial KM\n' : ''}${odoFinal != null ? 'ODO FI: $odoFinal KM\n' : ''}${dashSeparator()}
+FOLIO : \$despachoId
+FISCAL: \${invoiceUuid.substring(0, 18)}
+FECHA : \${timestamp.toString().substring(0, 19)}
+DESP  : ID-\$operatorCardUid
+PAGO  : \${metodoPago.toUpperCase()}
+\${dashSeparator()}
 CANTIDAD PRODUCTO TOTAL
-${dashSeparator()}
+\${dashSeparator()}
 45.10 L  PREMIUM  \$1,118.48
-${dashSeparator()}
-${right("SUBTOTAL: \$967.54")}
-${right("IVA (16%): \$150.94")}
-${right("TOTAL: \$1,118.48")}
-${separator()}
-${center("FACTURA EMITIDA CON EXITO")}
-${center("REGIMEN GENERAL DE LEY")}
-${center("GRACIAS POR SU PREFERENCIA")}
-${separator()}
+\${dashSeparator()}
+\${right("SUBTOTAL: \$967.54")}
+\${right("IVA (16%): \$150.94")}
+\${right("TOTAL: \$1,118.48")}
+\${separator()}
+\${center("FACTURA EMITIDA CON EXITO")}
+\${center("REGIMEN GENERAL DE LEY")}
+\${center("GRACIAS POR SU PREFERENCIA")}
+\${separator()}
 ''';
 
     return FacturacionResponse(

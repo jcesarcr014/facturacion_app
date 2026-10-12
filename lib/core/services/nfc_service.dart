@@ -32,6 +32,7 @@ class _MsrDialogState extends State<_MsrDialog> {
     _sub = _msrService.onSwipe.listen((data) {
       if (_isSuccess) return;
 
+      print('=== [DEBUG MSR] RAW SWIPE DATA: "$data" ===');
       // Clean the card data (remove $, %, ;, ?, ^ at start/end)
       // Example: %12345? -> 12345
       String clean = data.replaceAll(RegExp(r'^[\$\*\%\;\^\?]+|[\$\*\%\;\^\?]+$'), '').trim();
@@ -40,6 +41,7 @@ class _MsrDialogState extends State<_MsrDialog> {
       if (clean.contains('?')) {
         clean = clean.split('?').first;
       }
+      print('=== [DEBUG MSR] TARJETA LIMPIA (ID DESPACHADOR): "$clean" ===');
 
       setState(() {
         _scannedNumber = clean;

@@ -2,13 +2,15 @@ import '../models/facturacion_response.dart';
 
 abstract class FacturacionRepository {
   Future<FacturacionResponse> generateInvoice({
-    required String despachoId,
-    required String paymentType,
-    String? rfc,
-    String? tagId,
+    required int despachoId,
+    required String metodoPago,
+    required String operatorCardUid,
+    int? companyClientId,
+    String? formaPago,
+    String? usoCfdi,
+    String? referenciaBancaria,
     int? odoInicial,
     int? odoFinal,
-    required String dispatcherId,
     required int printerWidth,
   });
 }

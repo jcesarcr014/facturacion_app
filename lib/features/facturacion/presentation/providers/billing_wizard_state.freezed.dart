@@ -23,6 +23,9 @@ mixin _$BillingWizardState {
   List<Cliente> get searchedClientes => throw _privateConstructorUsedError;
   bool get isSearchingClientes => throw _privateConstructorUsedError;
   Cliente? get selectedCliente => throw _privateConstructorUsedError;
+  String? get formaPago => throw _privateConstructorUsedError;
+  String? get usoCfdi => throw _privateConstructorUsedError;
+  String get referenciaBancaria => throw _privateConstructorUsedError;
   String get tagId => throw _privateConstructorUsedError;
   bool get isValidatingTag => throw _privateConstructorUsedError;
   TagValidationResult? get tagValidationResult =>
@@ -55,6 +58,9 @@ abstract class $BillingWizardStateCopyWith<$Res> {
     List<Cliente> searchedClientes,
     bool isSearchingClientes,
     Cliente? selectedCliente,
+    String? formaPago,
+    String? usoCfdi,
+    String referenciaBancaria,
     String tagId,
     bool isValidatingTag,
     TagValidationResult? tagValidationResult,
@@ -92,6 +98,9 @@ class _$BillingWizardStateCopyWithImpl<$Res, $Val extends BillingWizardState>
     Object? searchedClientes = null,
     Object? isSearchingClientes = null,
     Object? selectedCliente = freezed,
+    Object? formaPago = freezed,
+    Object? usoCfdi = freezed,
+    Object? referenciaBancaria = null,
     Object? tagId = null,
     Object? isValidatingTag = null,
     Object? tagValidationResult = freezed,
@@ -128,6 +137,18 @@ class _$BillingWizardStateCopyWithImpl<$Res, $Val extends BillingWizardState>
                 ? _value.selectedCliente
                 : selectedCliente // ignore: cast_nullable_to_non_nullable
                       as Cliente?,
+            formaPago: freezed == formaPago
+                ? _value.formaPago
+                : formaPago // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            usoCfdi: freezed == usoCfdi
+                ? _value.usoCfdi
+                : usoCfdi // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            referenciaBancaria: null == referenciaBancaria
+                ? _value.referenciaBancaria
+                : referenciaBancaria // ignore: cast_nullable_to_non_nullable
+                      as String,
             tagId: null == tagId
                 ? _value.tagId
                 : tagId // ignore: cast_nullable_to_non_nullable
@@ -230,6 +251,9 @@ abstract class _$$BillingWizardStateImplCopyWith<$Res>
     List<Cliente> searchedClientes,
     bool isSearchingClientes,
     Cliente? selectedCliente,
+    String? formaPago,
+    String? usoCfdi,
+    String referenciaBancaria,
     String tagId,
     bool isValidatingTag,
     TagValidationResult? tagValidationResult,
@@ -269,6 +293,9 @@ class __$$BillingWizardStateImplCopyWithImpl<$Res>
     Object? searchedClientes = null,
     Object? isSearchingClientes = null,
     Object? selectedCliente = freezed,
+    Object? formaPago = freezed,
+    Object? usoCfdi = freezed,
+    Object? referenciaBancaria = null,
     Object? tagId = null,
     Object? isValidatingTag = null,
     Object? tagValidationResult = freezed,
@@ -305,6 +332,18 @@ class __$$BillingWizardStateImplCopyWithImpl<$Res>
             ? _value.selectedCliente
             : selectedCliente // ignore: cast_nullable_to_non_nullable
                   as Cliente?,
+        formaPago: freezed == formaPago
+            ? _value.formaPago
+            : formaPago // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        usoCfdi: freezed == usoCfdi
+            ? _value.usoCfdi
+            : usoCfdi // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        referenciaBancaria: null == referenciaBancaria
+            ? _value.referenciaBancaria
+            : referenciaBancaria // ignore: cast_nullable_to_non_nullable
+                  as String,
         tagId: null == tagId
             ? _value.tagId
             : tagId // ignore: cast_nullable_to_non_nullable
@@ -356,6 +395,9 @@ class _$BillingWizardStateImpl implements _BillingWizardState {
     required final List<Cliente> searchedClientes,
     required this.isSearchingClientes,
     required this.selectedCliente,
+    required this.formaPago,
+    required this.usoCfdi,
+    required this.referenciaBancaria,
     required this.tagId,
     required this.isValidatingTag,
     required this.tagValidationResult,
@@ -387,6 +429,12 @@ class _$BillingWizardStateImpl implements _BillingWizardState {
   @override
   final Cliente? selectedCliente;
   @override
+  final String? formaPago;
+  @override
+  final String? usoCfdi;
+  @override
+  final String referenciaBancaria;
+  @override
   final String tagId;
   @override
   final bool isValidatingTag;
@@ -407,7 +455,7 @@ class _$BillingWizardStateImpl implements _BillingWizardState {
 
   @override
   String toString() {
-    return 'BillingWizardState(paymentMode: $paymentMode, contadoType: $contadoType, rfcQuery: $rfcQuery, searchedClientes: $searchedClientes, isSearchingClientes: $isSearchingClientes, selectedCliente: $selectedCliente, tagId: $tagId, isValidatingTag: $isValidatingTag, tagValidationResult: $tagValidationResult, odoInicialStr: $odoInicialStr, odoFinalStr: $odoFinalStr, nipStr: $nipStr, isBilling: $isBilling, billingResult: $billingResult, errorMessage: $errorMessage)';
+    return 'BillingWizardState(paymentMode: $paymentMode, contadoType: $contadoType, rfcQuery: $rfcQuery, searchedClientes: $searchedClientes, isSearchingClientes: $isSearchingClientes, selectedCliente: $selectedCliente, formaPago: $formaPago, usoCfdi: $usoCfdi, referenciaBancaria: $referenciaBancaria, tagId: $tagId, isValidatingTag: $isValidatingTag, tagValidationResult: $tagValidationResult, odoInicialStr: $odoInicialStr, odoFinalStr: $odoFinalStr, nipStr: $nipStr, isBilling: $isBilling, billingResult: $billingResult, errorMessage: $errorMessage)';
   }
 
   @override
@@ -429,6 +477,11 @@ class _$BillingWizardStateImpl implements _BillingWizardState {
                 other.isSearchingClientes == isSearchingClientes) &&
             (identical(other.selectedCliente, selectedCliente) ||
                 other.selectedCliente == selectedCliente) &&
+            (identical(other.formaPago, formaPago) ||
+                other.formaPago == formaPago) &&
+            (identical(other.usoCfdi, usoCfdi) || other.usoCfdi == usoCfdi) &&
+            (identical(other.referenciaBancaria, referenciaBancaria) ||
+                other.referenciaBancaria == referenciaBancaria) &&
             (identical(other.tagId, tagId) || other.tagId == tagId) &&
             (identical(other.isValidatingTag, isValidatingTag) ||
                 other.isValidatingTag == isValidatingTag) &&
@@ -456,6 +509,9 @@ class _$BillingWizardStateImpl implements _BillingWizardState {
     const DeepCollectionEquality().hash(_searchedClientes),
     isSearchingClientes,
     selectedCliente,
+    formaPago,
+    usoCfdi,
+    referenciaBancaria,
     tagId,
     isValidatingTag,
     tagValidationResult,
@@ -487,6 +543,9 @@ abstract class _BillingWizardState implements BillingWizardState {
     required final List<Cliente> searchedClientes,
     required final bool isSearchingClientes,
     required final Cliente? selectedCliente,
+    required final String? formaPago,
+    required final String? usoCfdi,
+    required final String referenciaBancaria,
     required final String tagId,
     required final bool isValidatingTag,
     required final TagValidationResult? tagValidationResult,
@@ -510,6 +569,12 @@ abstract class _BillingWizardState implements BillingWizardState {
   bool get isSearchingClientes;
   @override
   Cliente? get selectedCliente;
+  @override
+  String? get formaPago;
+  @override
+  String? get usoCfdi;
+  @override
+  String get referenciaBancaria;
   @override
   String get tagId;
   @override

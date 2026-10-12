@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:facturacion_app/core/services/nfc_service.dart';
+import 'package:facturacion_app/core/services/real_nfc_service.dart';
 import 'package:facturacion_app/core/services/printer_service.dart';
 import '../providers/billing_wizard_state.dart';
+import '../providers/billing_providers.dart';
 import 'widgets/custom_numpad.dart';
 
 class BillingWizardView extends ConsumerStatefulWidget {
@@ -114,7 +116,10 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
     }
   }
 
-  void _showMagneticBottomSheet(BillingWizardState state, BillingWizard notifier) {
+  void _showMagneticBottomSheet(
+    BillingWizardState state,
+    BillingWizard notifier,
+  ) {
     showModalBottomSheet(
       context: context,
       isDismissible: true,
@@ -167,16 +172,34 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
                         final dispatcherUid = await ref
                             .read(nfcServiceProvider)
                             .readCard(context);
+                        print('=== [DEBUG UI] Tarjeta Despachador Leída: $dispatcherUid ===');
                         if (dispatcherUid == null || !mounted) return;
 
                         // 2. Trigger Invoicing generation loader (2 seconds)
+                        print('=== [DEBUG UI] Llamando notifier.generateInvoice con Despacho: ${widget.despachoId} y Despachador: $dispatcherUid ===');
                         final success = await notifier.generateInvoice(
                           despachoId: widget.despachoId,
                           dispatcherId: dispatcherUid,
                         );
-                        if (!success || !mounted) return;
+                        print('=== [DEBUG UI] Resultado generateInvoice: $success ===');
+                        if (!success) {
+                          final errorMsg = ref.read(billingWizardProvider).errorMessage ?? 'Error desconocido al facturar';
+                          print('=== [DEBUG UI ERROR] $errorMsg ===');
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error al facturar: $errorMsg'),
+                                backgroundColor: Colors.red,
+                                duration: const Duration(seconds: 6),
+                              ),
+                            );
+                          }
+                          return;
+                        }
+                        if (!mounted) return;
 
                         // 3. Trigger Printing simulated overlay (3 seconds)
+                        print('=== [DEBUG UI] Preparando para imprimir ticket ===');
                         final ticketText = ref
                             .read(billingWizardProvider)
                             .billingResult!
@@ -184,6 +207,7 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
                         await ref
                             .read(printerServiceProvider)
                             .printTicket(context, ticketText);
+                        print('=== [DEBUG UI] Ticket impreso con éxito ===');
                         if (!mounted) return;
 
                         // 4. Trigger Full-screen green success dialog (2.5 seconds)
@@ -257,7 +281,7 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
                         backgroundColor: const Color(0xFF0D9488),
                         minimumSize: const Size(double.infinity, 64),
                       ),
-                        child: const Text('Continuar'),
+                      child: const Text('Continuar'),
                     ),
                   ],
                 ),
@@ -429,7 +453,7 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
         const SizedBox(width: 16),
         Expanded(
           child: _buildSelectorCard(
-            title: 'CRÉDITO / TAG',
+            title: 'TAG\n(Cred. / Ant.)',
             icon: Icons.badge_outlined,
             isSelected: state.paymentMode == PaymentMode.credito,
             onTap: () {
@@ -468,6 +492,7 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
             const SizedBox(height: 8),
             Text(
               title,
+              textAlign: TextAlign.center,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -481,6 +506,9 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
   }
 
   Widget _buildContadoWizard(BillingWizardState state, BillingWizard notifier) {
+    final formasDePagoAsync = ref.watch(formasDePagoProvider);
+    final usosCfdiAsync = ref.watch(usosCfdiProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -635,6 +663,63 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
               ),
             ),
           ),
+
+        const SizedBox(height: 24),
+        const Text(
+          'Opciones de Facturación (SAT)',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 12),
+        formasDePagoAsync.when(
+          data: (formas) => DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Forma de Pago'),
+            value: state.formaPago,
+            items: formas
+                .map(
+                  (f) => DropdownMenuItem(
+                    value: f.clave,
+                    child: Text('${f.clave} - ${f.descripcion}', overflow: TextOverflow.ellipsis),
+                  ),
+                )
+                .toList(),
+            onChanged: notifier.setFormaPago,
+            isExpanded: true,
+          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, stack) => Text('Error al cargar Formas de Pago: $err'),
+        ),
+        if (state.contadoType == ContadoType.clienteRfc) ...[
+          const SizedBox(height: 16),
+          usosCfdiAsync.when(
+            data: (usos) => DropdownButtonFormField<String>(
+              decoration: const InputDecoration(labelText: 'Uso de CFDI'),
+              value: state.usoCfdi,
+              items: usos
+                  .map(
+                    (u) => DropdownMenuItem(
+                      value: u.clave,
+                      child: Text('${u.clave} - ${u.descripcion}', overflow: TextOverflow.ellipsis),
+                    ),
+                  )
+                  .toList(),
+              onChanged: notifier.setUsoCfdi,
+              isExpanded: true,
+            ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => Text('Error al cargar Usos CFDI: $err'),
+          ),
+        ],
+        if (state.formaPago == '04' || state.formaPago == '28') ...[
+          const SizedBox(height: 16),
+          TextField(
+            onChanged: notifier.setReferenciaBancaria,
+            decoration: const InputDecoration(
+              labelText: 'Referencia Bancaria',
+              hintText: 'Ej. 12345678',
+              prefixIcon: Icon(Icons.credit_card),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -650,36 +735,19 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () async {
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (_) => const AlertDialog(
-                      content: Row(
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(width: 20),
-                          Expanded(
-                            child: Text('Acerque TAG a la parte posterior...'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                  await Future.delayed(const Duration(seconds: 2));
-                  if (mounted && Navigator.canPop(context)) {
-                    Navigator.pop(context);
-                  }
-                  notifier.setTagId('123');
-
-                  // Let state update before validating
-                  await Future.delayed(const Duration(milliseconds: 100));
-                  final isValid = await notifier.validateTag();
-                  if (mounted && !isValid) {
-                    // The _handleTagValidation does the dialog natively, so we just use that directly
-                    _handleTagValidation(
-                      ref.read(billingWizardProvider),
-                      notifier,
-                    );
+                  final uid = await ref
+                      .read(realNfcServiceProvider)
+                      .readTag(context);
+                  if (uid != null && uid.isNotEmpty) {
+                    notifier.setTagId(uid);
+                    await Future.delayed(const Duration(milliseconds: 100));
+                    final isValid = await notifier.validateTag();
+                    if (mounted && !isValid) {
+                      _handleTagValidation(
+                        ref.read(billingWizardProvider),
+                        notifier,
+                      );
+                    }
                   }
                 },
                 icon: const Icon(Icons.contactless_outlined, size: 28),
@@ -819,8 +887,11 @@ class _BillingWizardViewState extends ConsumerState<BillingWizardView> {
 
   bool _isFormValid(BillingWizardState state) {
     if (state.paymentMode == PaymentMode.contado) {
-      if (state.contadoType == ContadoType.clienteRfc &&
-          state.selectedCliente == null) {
+      if (state.contadoType == ContadoType.clienteRfc) {
+        if (state.selectedCliente == null) return false;
+        if (state.formaPago == null || state.usoCfdi == null) return false;
+      }
+      if ((state.formaPago == '04' || state.formaPago == '28') && state.referenciaBancaria.trim().isEmpty) {
         return false;
       }
     } else {

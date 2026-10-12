@@ -6,9 +6,19 @@ import '../../data/repositories/tag_repository.dart';
 import '../../data/repositories/mock_tag_repository.dart';
 import '../../data/repositories/facturacion_repository.dart';
 import '../../data/repositories/mock_facturacion_repository.dart';
+import '../../data/repositories/sat_catalog_repository.dart';
+import '../../data/repositories/api_sat_catalog_repository.dart';
+import '../../data/models/sat_catalogs.dart';
+import '../../data/repositories/api_facturacion_repository.dart';
 import '../../../../core/network/dio_client.dart';
 
 part 'billing_providers.g.dart';
+
+@riverpod
+SatCatalogRepository satCatalogRepository(SatCatalogRepositoryRef ref) {
+  final dio = ref.watch(dioClientProvider);
+  return ApiSatCatalogRepository(dio: dio);
+}
 
 @riverpod
 ClienteRepository clienteRepository(ClienteRepositoryRef ref) {
@@ -25,6 +35,16 @@ TagRepository tagRepository(TagRepositoryRef ref) {
 
 @riverpod
 FacturacionRepository facturacionRepository(FacturacionRepositoryRef ref) {
-  // Swappable provider - returning Mock version for now
-  return MockFacturacionRepository();
+  final dio = ref.watch(dioClientProvider);
+  return ApiFacturacionRepository(dio);
+}
+
+@riverpod
+Future<List<FormaPago>> formasDePago(FormasDePagoRef ref) {
+  return ref.watch(satCatalogRepositoryProvider).getFormasDePago();
+}
+
+@riverpod
+Future<List<UsoCfdi>> usosCfdi(UsosCfdiRef ref) {
+  return ref.watch(satCatalogRepositoryProvider).getUsosCfdi();
 }

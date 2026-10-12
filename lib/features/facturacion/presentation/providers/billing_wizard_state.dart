@@ -21,6 +21,9 @@ class BillingWizardState with _$BillingWizardState {
     required List<Cliente> searchedClientes,
     required bool isSearchingClientes,
     required Cliente? selectedCliente,
+    required String? formaPago,
+    required String? usoCfdi,
+    required String referenciaBancaria,
     required String tagId,
     required bool isValidatingTag,
     required TagValidationResult? tagValidationResult,
@@ -44,6 +47,9 @@ class BillingWizard extends _$BillingWizard {
       searchedClientes: [],
       isSearchingClientes: false,
       selectedCliente: null,
+      formaPago: null,
+      usoCfdi: null,
+      referenciaBancaria: '',
       tagId: '',
       isValidatingTag: false,
       tagValidationResult: null,
@@ -78,6 +84,18 @@ class BillingWizard extends _$BillingWizard {
 
   void setNip(String value) {
     state = state.copyWith(nipStr: value);
+  }
+
+  void setFormaPago(String? value) {
+    state = state.copyWith(formaPago: value);
+  }
+
+  void setUsoCfdi(String? value) {
+    state = state.copyWith(usoCfdi: value);
+  }
+
+  void setReferenciaBancaria(String value) {
+    state = state.copyWith(referenciaBancaria: value);
   }
 
   void setTagId(String value) {
@@ -126,15 +144,6 @@ class BillingWizard extends _$BillingWizard {
     try {
       final repo = ref.read(facturacionRepositoryProvider);
       
-      final paymentType = state.paymentMode == PaymentMode.contado
-          ? (state.contadoType == ContadoType.publicoGeneral ? 'Contado (Público General)' : 'Contado (Cliente RFC)')
-          : 'Crédito (TAG)';
-
-      final rfc = state.paymentMode == PaymentMode.contado && state.contadoType == ContadoType.clienteRfc
-          ? state.selectedCliente?.rfc
-          : null;
-
-      final tagId = state.paymentMode == PaymentMode.credito ? state.tagId : null;
       final odoInicial = int.tryParse(state.odoInicialStr);
       final odoFinal = int.tryParse(state.odoFinalStr);
 
@@ -142,19 +151,23 @@ class BillingWizard extends _$BillingWizard {
       final printerWidth = await secureStorage.readPrinterWidth();
 
       final response = await repo.generateInvoice(
-        despachoId: despachoId,
-        paymentType: paymentType,
-        rfc: rfc,
-        tagId: tagId,
+        despachoId: int.parse(despachoId),
+        metodoPago: state.paymentMode == PaymentMode.contado ? 'contado' : 'credito',
+        operatorCardUid: dispatcherId,
+        companyClientId: state.selectedCliente?.id,
+        formaPago: state.formaPago,
+        usoCfdi: state.usoCfdi,
+        referenciaBancaria: state.referenciaBancaria.isNotEmpty ? state.referenciaBancaria : null,
         odoInicial: odoInicial,
         odoFinal: odoFinal,
-        dispatcherId: dispatcherId,
         printerWidth: printerWidth,
       );
 
       state = state.copyWith(isBilling: false, billingResult: response);
       return true;
-    } catch (e) {
+    } catch (e, stack) {
+      print('=== [DEBUG BILLING_WIZARD ERROR] $e ===');
+      print('=== [DEBUG BILLING_WIZARD STACK] $stack ===');
       state = state.copyWith(isBilling: false, errorMessage: e.toString());
       return false;
     }
@@ -168,6 +181,9 @@ class BillingWizard extends _$BillingWizard {
       searchedClientes: [],
       isSearchingClientes: false,
       selectedCliente: null,
+      formaPago: null,
+      usoCfdi: null,
+      referenciaBancaria: '',
       tagId: '',
       isValidatingTag: false,
       tagValidationResult: null,
