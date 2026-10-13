@@ -186,7 +186,7 @@ class FiscalTicketFormatter {
 
     if (qrUrl.isNotEmpty) {
       buffer.writeln(center('[CODIGO QR SAT]'));
-      buffer.writeln(center(qrUrl));
+      buffer.writeln('<<<QR:$qrUrl>>>');
       buffer.writeln();
     }
 

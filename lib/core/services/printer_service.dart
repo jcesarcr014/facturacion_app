@@ -104,7 +104,33 @@ class PrinterService {
         final isBound = await sunmi_printer.SunmiPrinter.bindingPrinter();
         if (isBound == true) {
           await sunmi_printer.SunmiPrinter.initPrinter();
-          await sunmi_printer.SunmiPrinter.printText(ticketContent);
+          final lines = ticketContent.split('\n');
+          final textBuffer = StringBuffer();
+          for (final line in lines) {
+            if (_isQrLine(line)) {
+              final qrData = _extractQrData(line);
+              if (textBuffer.isNotEmpty) {
+                await sunmi_printer.SunmiPrinter.printText(textBuffer.toString());
+                textBuffer.clear();
+              }
+              if (qrData.isNotEmpty) {
+                await sunmi_printer.SunmiPrinter.lineWrap(1);
+                await sunmi_printer.SunmiPrinter.printQRCode(
+                  qrData,
+                  style: sunmi_printer.SunmiQrcodeStyle(
+                    qrcodeSize: 5,
+                    align: sunmi_printer.SunmiPrintAlign.CENTER,
+                  ),
+                );
+                await sunmi_printer.SunmiPrinter.lineWrap(1);
+              }
+            } else {
+              textBuffer.writeln(line);
+            }
+          }
+          if (textBuffer.isNotEmpty) {
+            await sunmi_printer.SunmiPrinter.printText(textBuffer.toString());
+          }
           await sunmi_printer.SunmiPrinter.lineWrap(3);
         } else {
           print('Impresora interna (Sunmi) no vinculada');
@@ -149,6 +175,24 @@ class PrinterService {
 
   // --- PRIVATE UTILITIES ---
 
+  bool _isQrLine(String line) {
+    final trimmed = line.trim();
+    if (trimmed.startsWith('<<<QR:') && trimmed.endsWith('>>>')) return true;
+    if (trimmed.startsWith('https://verificacfdi.') ||
+        trimmed.startsWith('https://consulta.cfdi.')) {
+      return true;
+    }
+    return false;
+  }
+
+  String _extractQrData(String line) {
+    final trimmed = line.trim();
+    if (trimmed.startsWith('<<<QR:') && trimmed.endsWith('>>>')) {
+      return trimmed.substring(6, trimmed.length - 3).trim();
+    }
+    return trimmed;
+  }
+
   Future<void> _runPrintSequence(
     BuildContext context,
     BlueThermalPrinter bluetooth,
@@ -163,10 +207,24 @@ class PrinterService {
     try {
       final lines = ticketContent.split('\n');
       for (final line in lines) {
-        // printCustom(String text, int size, int align)
-        // size: 0 (small), 1 (medium), 2 (large)
-        // align: 0 (left-aligned)
-        await bluetooth.printCustom(line, fontSize, 0);
+        if (_isQrLine(line)) {
+          final qrData = _extractQrData(line);
+          if (qrData.isNotEmpty) {
+            try {
+              await bluetooth.printNewLine();
+              await bluetooth.printQRcode(qrData, 240, 240, 1);
+              await bluetooth.printNewLine();
+            } catch (e) {
+              print("Error printing QR code: $e");
+              await bluetooth.printCustom(qrData, 0, 1);
+            }
+          }
+        } else {
+          // printCustom(String text, int size, int align)
+          // size: 0 (small), 1 (medium), 2 (large)
+          // align: 0 (left-aligned)
+          await bluetooth.printCustom(line, fontSize, 0);
+        }
       }
       // Feed paper so it can be torn off cleanly
       await bluetooth.printNewLine();
@@ -199,10 +257,23 @@ class PrinterService {
 
       final lines = ticketContent.split('\n');
       for (final line in lines) {
-        bytes += generator.text(
-          line,
-          styles: const PosStyles(codeTable: 'CP1252'),
-        );
+        if (_isQrLine(line)) {
+          final qrData = _extractQrData(line);
+          if (qrData.isNotEmpty) {
+            bytes += generator.feed(1);
+            bytes += generator.qrcode(
+              qrData,
+              align: PosAlign.center,
+              size: QRSize.size4,
+            );
+            bytes += generator.feed(1);
+          }
+        } else {
+          bytes += generator.text(
+            line,
+            styles: const PosStyles(codeTable: 'CP1252'),
+          );
+        }
       }
       bytes += generator.feed(3);
       bytes += generator.cut();
